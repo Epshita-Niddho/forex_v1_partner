@@ -57,8 +57,8 @@ class TradeEarning extends Command
 	      //ini_set('max_execution_time', '-1');
 	      $ib_clients=DB::table('cms_liveaccount')->where('ib_status',1)->select('affiliate_prom_code')->get();
 
-	      $st = '2020-09-06';
-	      $et = '2020-09-09';
+	      $st = '2020-10-26';
+	      $et = '2020-10-27';
 
 	      $current_date = date('Y-m-d');
 	      //$st = date('Y-m-d');
@@ -67,7 +67,7 @@ class TradeEarning extends Command
 	      
 	      foreach ($ib_clients as $key => $ib_client) {
 	        $affiliate_prom_code=$ib_client->affiliate_prom_code;
-	        $affiliate_prom_code=5122;
+	        $affiliate_prom_code=5079;
 	        
 	        $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')
 	            ->join('cms_account','cms_account.email','cms_liveaccount.email')
@@ -81,7 +81,8 @@ class TradeEarning extends Command
 	            ->where('mt5_orders_history.TimeDone','<=',$et)
 	            ->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.VolumeInitial','mt5_orders_history.TimeDone','cms_ib_level.child_ib','cms_ib_level.level','cms_account.act_type')
 	            ->get();
-	        dd(count($mt5_orders_history));
+	        // dd(count($mt5_orders_history));
+	           dd($mt5_orders_history->toArray());
 	        
 	        $total_earnings = 0;
 
