@@ -57,17 +57,17 @@ class TradeEarning extends Command
 	      //ini_set('max_execution_time', '-1');
 	      $ib_clients=DB::table('cms_liveaccount')->where('ib_status',1)->select('affiliate_prom_code')->get();
 
-	      $st = '2020-10-26';
-	      $et = '2020-10-27';
+	      // $st = '2020-10-26';
+	     // $et = '2020-10-27';
 
 	      $current_date = date('Y-m-d');
-	      //$st = date('Y-m-d');
-	      // $st = date('Y-m-d', strtotime($current_date.'-1 day'));
-	      // $et = date('Y-m-d', strtotime($current_date.'+1 day'));
+	      $st = date('Y-m-d');
+	      $st = date('Y-m-d', strtotime($current_date.'-1 day'));
+	      $et = date('Y-m-d', strtotime($current_date.'+1 day'));
 	      
 	      foreach ($ib_clients as $key => $ib_client) {
 	        $affiliate_prom_code=$ib_client->affiliate_prom_code;
-	        $affiliate_prom_code=5079;
+	        // $affiliate_prom_code=5079;
 	        
 	        $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')
 	            ->join('cms_account','cms_account.email','cms_liveaccount.email')
@@ -79,10 +79,8 @@ class TradeEarning extends Command
 	            ->where('mt5_deals.VolumeClosed','<>',0)
 	            ->where('mt5_orders_history.TimeDone','>=',$st)
 	            ->where('mt5_orders_history.TimeDone','<=',$et)
-	            ->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.VolumeInitial','mt5_orders_history.TimeDone','cms_ib_level.child_ib','cms_ib_level.level','cms_account.act_type')
+	            ->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.VolumeInitial','mt5_orders_history.TimeDone','cms_ib_level.child_ib','cms_ib_level.level','cms_account.act_type','cms_account.account_no')
 	            ->get();
-	        // dd(count($mt5_orders_history));
-	           dd($mt5_orders_history->toArray());
 	        
 	        $total_earnings = 0;
 
@@ -120,6 +118,7 @@ class TradeEarning extends Command
 	              DB::table('partner_trade_earning')
 	                  ->insert([
 	                    'ib_code' => $affiliate_prom_code,
+						'account_no' => $moh->account_no,
 	                    'position_id'=>$moh->PositionID,
 	                    'from_date'=>$open_time_trade->Time,
 	                    'to_date'=>$moh->TimeDone,
