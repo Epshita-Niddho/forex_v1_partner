@@ -20,7 +20,7 @@
                                 </a>
                             </li>
                             <li class="breadcrumb-item">
-                                <a href="/neteller_withdraw">Bank Transfer</a>
+                                <a href="/neteller_withdraw">Bank Transfers</a>
                             </li>
                             
                         </ol>
