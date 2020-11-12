@@ -11,6 +11,7 @@ use App\Models\CMS_Liveaccount;
 use App\Models\CMS_Iblevel;
 use App\Models\CMS_IbCommission;
 use App\Models\Partner_Withdraw;
+use App\Models\Partner_TradeEarning;
 use Mail;
 use Session;
 use Carbon\Carbon;
@@ -55,29 +56,34 @@ class DashboardController extends Controller
 		
 		$referral_accounts = CMS_Iblevel::where('parent_ib',$affiliate_prom_code)->count();
 
-		$mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->where('cms_ib_level.parent_ib',$affiliate_prom_code)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('mt5_deals.VolumeClosed','<>',0)->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.TimeDone','mt5_orders_history.VolumeInitial','cms_ib_level.level','cms_account.act_type')->get();
+		$total_earnings = DB::table('partner_trade_earning')->where([
+            ['ib_code', '=', $affiliate_prom_code],
+        ])->sum('total_commission');
 
-		$total_earnings = 0;
 
-		foreach ($mt5_orders_history as $key=>$moh) {
-				$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
-			if($open_time_trade){
-			$open_time=$open_time_trade->Time;
-			$start = strtotime($open_time);
-			$end = strtotime($moh->TimeDone);
+		// $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->where('cms_ib_level.parent_ib',$affiliate_prom_code)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('mt5_deals.VolumeClosed','<>',0)->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.TimeDone','mt5_orders_history.VolumeInitial','cms_ib_level.level','cms_account.act_type')->get();
 
-			if(($end-$start)<0){
-				unset($mt5_orders_history[$key]);
-				continue;
-			}
+		// $total_earnings = 0;
 
-			}
-			$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$affiliate_prom_code)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
-			if($ib_commission){
-				$total_earnings+=$ib_commission->commission*$moh->VolumeInitial/10000;
-			}
+		// foreach ($mt5_orders_history as $key=>$moh) {
+		// 		$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
+		// 	if($open_time_trade){
+		// 	$open_time=$open_time_trade->Time;
+		// 	$start = strtotime($open_time);
+		// 	$end = strtotime($moh->TimeDone);
 
-		}
+		// 	if(($end-$start)<0){
+		// 		unset($mt5_orders_history[$key]);
+		// 		continue;
+		// 	}
+
+		// 	}
+		// 	$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$affiliate_prom_code)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
+		// 	if($ib_commission){
+		// 		$total_earnings+=$ib_commission->commission*$moh->VolumeInitial/10000;
+		// 	}
+
+		// }
 
 		if($total_earnings>0){
 			$total_earnings = round($total_earnings,2);
@@ -236,44 +242,66 @@ class DashboardController extends Controller
     	// $end = $request->end;
     	$end =date( 'Y-m-d H:i:s', strtotime( $request->end ) + 86399);
     	
+		$mt5_orders_history = Partner_TradeEarning::join('cms_liveaccount', 'cms_liveaccount.affiliate_prom_code', 'partner_trade_earning.child_ib')
+            ->join('cms_account', 'cms_account.email', 'cms_liveaccount.email')
+            ->where('partner_trade_earning.ib_code', $request->id)
+            ->where('partner_trade_earning.level', $req_level)
+            ->where('partner_trade_earning.to_date', '>' ,$start)
+            ->where('partner_trade_earning.to_date', '<' ,$end)
+            ->select('partner_trade_earning.position_id', 'partner_trade_earning.symbol', 'partner_trade_earning.level', 'partner_trade_earning.act_type', 'cms_liveaccount.fname', 'cms_liveaccount.lname', 'cms_liveaccount.country', 'cms_liveaccount.affiliate_prom_code', 'cms_account.account_no', 'partner_trade_earning.to_date', 'partner_trade_earning.volume', 'partner_trade_earning.total_commission')
+            ->orderBy('partner_trade_earning.to_date', 'desc')
+            ->get();
+        // dd($mt5_orders_history);
 
+        $total_volume = DB::table('partner_trade_earning')->where([
+            ['ib_code', '=', $request->id],
+            ['level', '=', $req_level],
+            ['to_date', '>', $start],
+            ['to_date', '<', $end],
+        ])->sum('volume');
 
+        $total_ib_commission = DB::table('partner_trade_earning')->where([
+            ['ib_code', '=', $request->id],
+            ['level', '=', $req_level],
+            ['to_date', '>', $start],
+            ['to_date', '<', $end],
+        ])->sum('total_commission'); 
 
 		$info=DB::table('cms_liveaccount')->where('affiliate_prom_code',$request->id)->first();
 		
-		$mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->join('partner_currency_symbols','partner_currency_symbols.symbol','mt5_orders_history.Symbol')->join('partner_currency_groups','partner_currency_groups.id','partner_currency_symbols.partner_currency_group_id')->where('cms_ib_level.parent_ib',$request->id)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('cms_ib_level.level',$req_level)->whereBetween('mt5_orders_history.TimeDone',[$start,$end])->where('mt5_deals.VolumeClosed','<>',0)->selectRaw('mt5_deals.PositionID,mt5_orders_history.Symbol,cms_ib_level.level,cms_account.act_type,cms_liveaccount.fname,cms_liveaccount.lname,cms_liveaccount.country,cms_liveaccount.affiliate_prom_code,cms_account.account_no,mt5_orders_history.TimeDone,mt5_orders_history.Type,mt5_orders_history.VolumeInitial/10000 AS volume')->orderBy('mt5_orders_history.TimeDone','desc')->get();
+		// $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->join('partner_currency_symbols','partner_currency_symbols.symbol','mt5_orders_history.Symbol')->join('partner_currency_groups','partner_currency_groups.id','partner_currency_symbols.partner_currency_group_id')->where('cms_ib_level.parent_ib',$request->id)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('cms_ib_level.level',$req_level)->whereBetween('mt5_orders_history.TimeDone',[$start,$end])->where('mt5_deals.VolumeClosed','<>',0)->selectRaw('mt5_deals.PositionID,mt5_orders_history.Symbol,cms_ib_level.level,cms_account.act_type,cms_liveaccount.fname,cms_liveaccount.lname,cms_liveaccount.country,cms_liveaccount.affiliate_prom_code,cms_account.account_no,mt5_orders_history.TimeDone,mt5_orders_history.Type,mt5_orders_history.VolumeInitial/10000 AS volume')->orderBy('mt5_orders_history.TimeDone','desc')->get();
 
-		$total_volume = 0;
-		$total_ib_commission = 0;
-		foreach ($mt5_orders_history as $key=>$moh) {
+		// $total_volume = 0;
+		// $total_ib_commission = 0;
+		// foreach ($mt5_orders_history as $key=>$moh) {
 			
-			// Search open time for this trade
-			$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
-			if($open_time_trade){
-			$open_time=$open_time_trade->Time;
-			$start = strtotime($open_time);
-			$end = strtotime($moh->TimeDone);
+		// 	// Search open time for this trade
+		// 	$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
+		// 	if($open_time_trade){
+		// 	$open_time=$open_time_trade->Time;
+		// 	$start = strtotime($open_time);
+		// 	$end = strtotime($moh->TimeDone);
 
-			if(($end-$start)<0){
-				unset($mt5_orders_history[$key]);
-				continue;
-			}
+		// 	if(($end-$start)<0){
+		// 		unset($mt5_orders_history[$key]);
+		// 		continue;
+		// 	}
 
-			}
+		// 	}
 
-			$moh->ib_commission=0; 
+		// 	$moh->ib_commission=0; 
 
-			$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$request->id)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
+		// 	$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$request->id)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
 			
-			if($ib_commission){
-				$moh->ib_commission=$ib_commission->commission*$moh->volume;
-			}
-			$total_volume+=$moh->volume;
-			$total_ib_commission+=$moh->ib_commission;
+		// 	if($ib_commission){
+		// 		$moh->ib_commission=$ib_commission->commission*$moh->volume;
+		// 	}
+		// 	$total_volume+=$moh->volume;
+		// 	$total_ib_commission+=$moh->ib_commission;
 
 			
 			
-		}
+		// }
 
 		$total_volume = round($total_volume,2);
 		$total_ib_commission = round($total_ib_commission,2);

@@ -13,7 +13,7 @@
                                         
                                         <th>Time</th>
                                         
-                                        <th>Type</th>
+                                        {{-- <th>Type</th> --}}
                                         <th>Instrument</th>
                                         <th>Lots</th>
                                         <th>Commission</th>
@@ -35,27 +35,27 @@
                                         <td>{{$moh->account_no}}</td>
                                         <td>{{$moh->act_type}}</td>
                                         
-                                        <td>{{$moh->TimeDone}}</td>
-                                        <td>
+                                        <td>{{$moh->to_date}}</td>
+                                        {{-- <td>
                                             @if($moh->Type==0)
                                             Buy
                                         @else
                                             Sell
                                         @endif
-                            </td>
-                                        <td>{{$moh->Symbol}}</td>
+                            </td> --}}
+                                        <td>{{$moh->symbol}}</td>
 
                                         
-                                       <td>{{round($moh->volume,2)}}</td>
-                                        <td>{{round($moh->ib_commission,2)}}</td>
+                                       <td>{{round($moh->volume,2) / 10000}}</td>
+                                        <td>{{round($moh->total_commission,2)}}</td>
                                         
                                     </tr>
                                    @endforeach 
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                        <th colspan="9">Total:</th>
-                                        <th>{{$total_volume}}</th>
+                                        <th colspan="8">Total:</th>
+                                        <th>{{$total_volume / 10000}}</th>
                                         <th>{{$total_ib_commission}}</th>
                                         </tr>
                                     </tfoot>
