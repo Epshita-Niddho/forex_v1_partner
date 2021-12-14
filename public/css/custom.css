@@ -105,7 +105,9 @@
 .admin_img {
   width: 45px;
   height: 30px;
-  margin-top: -10px; }
+  margin-top: 10px; 
+  
+}
 
 .admin_img2 {
   width: 30px;
@@ -705,8 +707,8 @@ background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAIAAAAC6
 .navbar-brand img{
   width: 180px;
   height: auto;
-  /*margin-left: 25%*/
-  padding: 10px
+  margin-left: 80px;
+  padding: 0px
 }
 
 .fixed-navber{

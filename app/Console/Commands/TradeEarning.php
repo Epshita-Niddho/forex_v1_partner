@@ -57,6 +57,13 @@ class TradeEarning extends Command
 	      //ini_set('max_execution_time', '-1');
 	      $ib_clients=DB::table('cms_liveaccount')->where('ib_status',1)->select('affiliate_prom_code')->get();
 
+	      $min_trade_duration = DB::table('custom_settings')
+			->where('key', 'min_trade_duration')
+			->select('value')
+			->first();
+
+		  $min_trade_duration = $min_trade_duration->value * 60;
+
 	      // $st = '2020-10-26';
 	     // $et = '2020-10-27';
 
@@ -67,7 +74,7 @@ class TradeEarning extends Command
 	      
 	      foreach ($ib_clients as $key => $ib_client) {
 	        $affiliate_prom_code=$ib_client->affiliate_prom_code;
-	        // $affiliate_prom_code=5079;
+	        // $affiliate_prom_code=5008;
 	        
 	        $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')
 	            ->join('cms_account','cms_account.email','cms_liveaccount.email')
@@ -84,6 +91,7 @@ class TradeEarning extends Command
 	        
 	        $total_earnings = 0;
 
+	        // dd($mt5_orders_history->toArray());
 	        foreach ($mt5_orders_history as $key=>$moh) {
 
 	          $open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
@@ -92,7 +100,7 @@ class TradeEarning extends Command
 	            $start = strtotime($open_time);
 	            $end = strtotime($moh->TimeDone);
 	            //$ttt = $end-$start;
-	            if(($end-$start)<180){
+	            if(($end-$start)<$min_trade_duration){
 	              unset($mt5_orders_history[$key]);
 	              continue;
 	            }
@@ -110,7 +118,7 @@ class TradeEarning extends Command
 	            ->where('cms_ib_commission.group_name',$moh->act_type)
 	            ->where('partner_currency_symbols.symbol',$moh->Symbol)
 	            ->select('cms_ib_commission.commission')->first();
-
+	            // dd($ib_commission->toArray());
 
 	            if($ib_commission){
 	              $total_earnings=$ib_commission->commission*$moh->VolumeInitial/10000;
@@ -139,7 +147,7 @@ class TradeEarning extends Command
 	        }
 	        echo 'IB '.$affiliate_prom_code.' Done'.PHP_EOL;
 	      }
-	      echo 'success for date '.$st.'--'.$et;
+	      echo 'success for date '.$st.'--'.$et.PHP_EOL;
 	    }
     }
 }

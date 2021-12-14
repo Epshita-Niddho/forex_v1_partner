@@ -23,14 +23,14 @@
     <div class="outer">
         <div class="inner bg-container">
            
-     <div class="row">
+        <div class="row">
         <div class="col-xl-6 col-lg-7 col-xs-12">
             <div class="row">
                 <div class="col-sm-6 col-xs-12">
                     <div class="bg-primary top_cards">
                         <div class="row icon_margin_left">
 
-                            <div class="col-lg-5 icon_padd_left">
+                            <div class="col-lg-6 icon_padd_left">
                                 <div class="float-xs-left">
                                     <span class="fa-stack fa-sm">
                                         <i class="fa fa-circle fa-stack-2x"></i>
@@ -38,12 +38,12 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 icon_padd_right">
-                                <div class="float-xs-right cards_content">
+                            <div class="col-lg-6 icon_padd_right">
+                                <div class="float-xs-left cards_content">
                                     <span class="number_val" id="sales_count">{{$referral_accounts}}</span>
                                     <!-- <i class="fa fa-long-arrow-up fa-2x">100</i> -->
                                     <br/>
-                                    <span class="card_description">Accounts</span>
+                                    <span class="card_description">Referral Accounts</span>
                                 </div>
                             </div>
                         </div>
@@ -52,7 +52,7 @@
                 <div class="col-sm-6 col-xs-12">
                     <div class="bg-success top_cards">
                         <div class="row icon_margin_left">
-                            <div class="col-lg-5 icon_padd_left">
+                            <div class="col-lg-6 icon_padd_left">
                                 <div class="float-xs-left">
                                     <span class="fa-stack fa-sm">
                                         <i class="fa fa-circle fa-stack-2x"></i>
@@ -60,12 +60,56 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 icon_padd_right">
-                                <div class="float-xs-right cards_content">
-                                    <span class="number_val" id="visitors_count">{{$total_earnings}}</span>
+                            <div class="col-lg-6 icon_padd_right">
+                                <div class="float-xs-left cards_content">
+                                    <span class="number_val" id="visitors_count">$ {{$net_commission}}</span>
                                     <!-- <iclass="fa fa-long-arrow-up fa-2x"></i> -->
                                     <br/>
-                                    <span class="card_description">Earning</span>
+                                    <span class="card_description">Total Earning</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xs-12">
+                    <div class="bg-success top_cards">
+                        <div class="row icon_margin_left">
+                            <div class="col-lg-6 icon_padd_left">
+                                <div class="float-xs-left">
+                                    <span class="fa-stack fa-sm">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-bar-chart fa-stack-1x fa-inverse text-success visit_icon"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 icon_padd_right">
+                                <div class="float-xs-left cards_content">
+                                    <span class="number_val" id="visitors_count">$ {{$ib_commission}}</span>
+                                    <!-- <iclass="fa fa-long-arrow-up fa-2x"></i> -->
+                                    <br/>
+                                    <span class="card_description">IB Commission</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xs-12">
+                    <div class="bg-success top_cards">
+                        <div class="row icon_margin_left">
+                            <div class="col-lg-6 icon_padd_left">
+                                <div class="float-xs-left">
+                                    <span class="fa-stack fa-sm">
+                                        <i class="fa fa-circle fa-stack-2x"></i>
+                                        <i class="fa fa-bar-chart fa-stack-1x fa-inverse text-success visit_icon"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-lg-6 icon_padd_right">
+                                <div class="float-xs-left cards_content">
+                                    <span class="number_val" id="visitors_count">$ {{$mam_commission}}</span>
+                                    <!-- <iclass="fa fa-long-arrow-up fa-2x"></i> -->
+                                    <br/>
+                                    <span class="card_description">MAM Commission</span>
                                 </div>
                             </div>
                         </div>
@@ -74,7 +118,7 @@
                 <div class="col-sm-6 col-xs-12">
                     <div class="bg-warning top_cards">
                         <div class="row icon_margin_left">
-                            <div class="col-lg-5 icon_padd_left">
+                            <div class="col-lg-6 icon_padd_left">
                                 <div class="float-xs-left">
                                     <span class="fa-stack fa-sm">
                                         <i class="fa fa-circle fa-stack-2x"></i>
@@ -82,13 +126,13 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 icon_padd_right">
-                                <div class="float-xs-right cards_content">
+                            <div class="col-lg-6 icon_padd_right">
+                                <div class="float-xs-left cards_content">
                                     <span class="number_val" id="revenue_count">
-                                        {{$total_withdraw}}
+                                        $ {{$total_withdraw}}
                                    </span>
                                     <br/>
-                                    <span class="card_description">Withdrawn</span>
+                                    <span class="card_description">Total Withdrawn</span>
                                 </div>
                             </div>
                         </div>
@@ -97,7 +141,7 @@
                 <div class="col-sm-6 col-xs-12">
                     <div class="bg-mint top_cards">
                         <div class="row icon_margin_left">
-                            <div class="col-lg-5 icon_padd_left">
+                            <div class="col-lg-6 icon_padd_left">
                                 <div class="float-xs-left">
                                     <span class="fa-stack fa-sm">
                                         <i class="fa fa-circle fa-stack-2x"></i>
@@ -105,11 +149,11 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="col-lg-7 icon_padd_right">
+                            <div class="col-lg-6 icon_padd_right">
                                 <div class="float-xs-right cards_content">
-                                    <span class="number_val" id="subscribers_count">{{$available_balance}}</span>
+                                    <span class="number_val" id="subscribers_count">$ {{$available_balance}}</span>
                                     <br/>
-                                    <span class="card_description">Balance</span>
+                                    <span class="card_description">Available Balance</span>
                                 </div>
                             </div>
                         </div>
@@ -311,80 +355,80 @@
         pointHitRadius: 30,
         pointBorderWidth: 2
     };
-    var dataSixth = {
-        label: "Level 6",
-        data: [2,3,4,5,6,7,1],
-        lineTension: 0.3,
-        fill: false,
-        borderColor: '#800080',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#800080',
-        pointBackgroundColor: 'lightgreen',
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        pointHitRadius: 30,
-        pointBorderWidth: 2
-    };
-    var dataSeventh = {
-        label: "Level 7",
-        data: [2,3,4,5,6,7,1],
-        lineTension: 0.3,
-        fill: false,
-        borderColor: '#C54B8C',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#C54B8C',
-        pointBackgroundColor: 'lightgreen',
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        pointHitRadius: 30,
-        pointBorderWidth: 2
-    };
-    var dataEighth = {
-        label: "Level 8",
-        data: [2,3,4,5,6,7,1],
-        lineTension: 0.3,
-        fill: false,
-        borderColor: '#7F00FF',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#7F00FF',
-        pointBackgroundColor: 'lightgreen',
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        pointHitRadius: 30,
-        pointBorderWidth: 2
-    };
-    var dataNinth = {
-        label: "Level 9",
-        data: [2,3,4,5,6,7,1],
-        lineTension: 0.3,
-        fill: false,
-        borderColor: '#006266',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#006266',
-        pointBackgroundColor: 'lightgreen',
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        pointHitRadius: 30,
-        pointBorderWidth: 2
-    };
-    var dataTenth = {
-        label: "Level 10",
-        data: [2,3,4,5,6,7,1],
-        lineTension: 0.3,
-        fill: false,
-        borderColor: '#009432',
-        backgroundColor: 'transparent',
-        pointBorderColor: '#009432',
-        pointBackgroundColor: 'lightgreen',
-        pointRadius: 3,
-        pointHoverRadius: 5,
-        pointHitRadius: 30,
-        pointBorderWidth: 2
-    };
+    // var dataSixth = {
+    //     label: "Level 6",
+    //     data: [2,3,4,5,6,7,1],
+    //     lineTension: 0.3,
+    //     fill: false,
+    //     borderColor: '#800080',
+    //     backgroundColor: 'transparent',
+    //     pointBorderColor: '#800080',
+    //     pointBackgroundColor: 'lightgreen',
+    //     pointRadius: 3,
+    //     pointHoverRadius: 5,
+    //     pointHitRadius: 30,
+    //     pointBorderWidth: 2
+    // };
+    // var dataSeventh = {
+    //     label: "Level 7",
+    //     data: [2,3,4,5,6,7,1],
+    //     lineTension: 0.3,
+    //     fill: false,
+    //     borderColor: '#C54B8C',
+    //     backgroundColor: 'transparent',
+    //     pointBorderColor: '#C54B8C',
+    //     pointBackgroundColor: 'lightgreen',
+    //     pointRadius: 3,
+    //     pointHoverRadius: 5,
+    //     pointHitRadius: 30,
+    //     pointBorderWidth: 2
+    // };
+    // var dataEighth = {
+    //     label: "Level 8",
+    //     data: [2,3,4,5,6,7,1],
+    //     lineTension: 0.3,
+    //     fill: false,
+    //     borderColor: '#7F00FF',
+    //     backgroundColor: 'transparent',
+    //     pointBorderColor: '#7F00FF',
+    //     pointBackgroundColor: 'lightgreen',
+    //     pointRadius: 3,
+    //     pointHoverRadius: 5,
+    //     pointHitRadius: 30,
+    //     pointBorderWidth: 2
+    // };
+    // var dataNinth = {
+    //     label: "Level 9",
+    //     data: [2,3,4,5,6,7,1],
+    //     lineTension: 0.3,
+    //     fill: false,
+    //     borderColor: '#006266',
+    //     backgroundColor: 'transparent',
+    //     pointBorderColor: '#006266',
+    //     pointBackgroundColor: 'lightgreen',
+    //     pointRadius: 3,
+    //     pointHoverRadius: 5,
+    //     pointHitRadius: 30,
+    //     pointBorderWidth: 2
+    // };
+    // var dataTenth = {
+    //     label: "Level 10",
+    //     data: [2,3,4,5,6,7,1],
+    //     lineTension: 0.3,
+    //     fill: false,
+    //     borderColor: '#009432',
+    //     backgroundColor: 'transparent',
+    //     pointBorderColor: '#009432',
+    //     pointBackgroundColor: 'lightgreen',
+    //     pointRadius: 3,
+    //     pointHoverRadius: 5,
+    //     pointHitRadius: 30,
+    //     pointBorderWidth: 2
+    // };
 
     var speedData = {
       labels: [2,3,4,5,6,7,1],
-      datasets: [dataFirst, dataSecond,dataThird]
+      datasets: [dataFirst, dataSecond,dataThird,dataFourth,dataFifth]
       //datasets: [dataFirst, dataSecond,dataThird,dataFourth,dataFifth,dataSixth,dataSeventh,dataEighth,dataNinth,dataTenth]
   };
 
@@ -393,7 +437,7 @@
         display: true,
         position: 'top',
         labels: {
-          boxWidth: 35,
+          boxWidth: 28,
           fontColor: '#999'
       },
   }
@@ -420,11 +464,6 @@ $(document).ready(function(){
          dataThird.data = data.level3;
          dataFourth.data = data.level4;
          dataFifth.data = data.level5;
-         dataSixth.data = data.level6;
-         dataSeventh.data = data.level7;
-         dataEighth.data = data.level8;
-         dataNinth.data = data.level9;
-         dataTenth.data = data.level10;
          new Chart(speedCanvas, {
           type: 'line',
           data: speedData,

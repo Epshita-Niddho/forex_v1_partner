@@ -56,7 +56,7 @@ class DashboardController extends Controller
 		
 		$referral_accounts = CMS_Iblevel::where('parent_ib',$affiliate_prom_code)->count();
 
-		$total_earnings = DB::table('partner_trade_earning')->where([
+		$ib_commission = DB::table('partner_trade_earning')->where([
             ['ib_code', '=', $affiliate_prom_code],
         ])->sum('total_commission');
 
@@ -85,9 +85,15 @@ class DashboardController extends Controller
 
 		// }
 
-		if($total_earnings>0){
-			$total_earnings = round($total_earnings,2);
+		if($ib_commission>0){
+			$ib_commission = round($ib_commission,2);
 		}
+
+		$mam_commission =  DB::table('st_commission_history')
+                ->where('manager_email', '=', $login_email)
+                ->sum('amount');
+
+        $net_commission = $ib_commission + $mam_commission;
 
 		$total_withdraw = Partner_Withdraw::where([
 				['email','=',$login_email],
@@ -98,7 +104,7 @@ class DashboardController extends Controller
 		}
 		
 
-		$available_balance = $total_earnings-$total_withdraw;
+		$available_balance = $net_commission-$total_withdraw;
 		if($available_balance>0){
 			$available_balance = round($available_balance,2);
 		}
@@ -114,7 +120,7 @@ class DashboardController extends Controller
 		$client_url=$client_portal_url->client_portal_url;
         
         // var_dump($label_x) ;exit;
-    	return view('backEnd.dashboard.index1',compact('mt5_orders_history','referral_accounts','total_earnings','history','available_balance','total_withdraw','affiliate_prom_code','client_url'));
+    	return view('backEnd.dashboard.index1',compact('mt5_orders_history','referral_accounts','net_commission','history','available_balance','total_withdraw','affiliate_prom_code','client_url','ib_commission','mam_commission'));
     }
 
     public function getIbLevelValues()
@@ -242,16 +248,15 @@ class DashboardController extends Controller
     	// $end = $request->end;
     	$end =date( 'Y-m-d H:i:s', strtotime( $request->end ) + 86399);
     	
-		$mt5_orders_history = Partner_TradeEarning::join('cms_liveaccount', 'cms_liveaccount.affiliate_prom_code', 'partner_trade_earning.child_ib')
-            ->join('cms_account', 'cms_account.email', 'cms_liveaccount.email')
-            ->where('partner_trade_earning.ib_code', $request->id)
-            ->where('partner_trade_earning.level', $req_level)
-            ->where('partner_trade_earning.to_date', '>' ,$start)
-            ->where('partner_trade_earning.to_date', '<' ,$end)
-            ->select('partner_trade_earning.position_id', 'partner_trade_earning.symbol', 'partner_trade_earning.level', 'partner_trade_earning.act_type', 'cms_liveaccount.fname', 'cms_liveaccount.lname', 'cms_liveaccount.country', 'cms_liveaccount.affiliate_prom_code', 'cms_account.account_no', 'partner_trade_earning.to_date', 'partner_trade_earning.volume', 'partner_trade_earning.total_commission')
-            ->orderBy('partner_trade_earning.to_date', 'desc')
-            ->get();
-        // dd($mt5_orders_history);
+		
+        $mt5_orders_history = Partner_TradeEarning::join('cms_liveaccount', 'cms_liveaccount.affiliate_prom_code', 'partner_trade_earning.child_ib')
+                ->where('partner_trade_earning.ib_code', $request->id)
+                ->where('partner_trade_earning.level', $req_level)
+                ->where('partner_trade_earning.to_date', '>', $start)
+                ->where('partner_trade_earning.to_date','<', $end)
+                ->select('partner_trade_earning.*', 'cms_liveaccount.fname', 'cms_liveaccount.lname', 'cms_liveaccount.country', 'cms_liveaccount.affiliate_prom_code')
+                ->orderBy('partner_trade_earning.to_date', 'desc')
+                ->get();
 
         $total_volume = DB::table('partner_trade_earning')->where([
             ['ib_code', '=', $request->id],
@@ -349,9 +354,10 @@ class DashboardController extends Controller
 		$trading_accounts=DB::table('cms_account')->join('mt5_users','mt5_users.Login','cms_account.account_no')->where([
 			['cms_account.email',session('login_email')],
 			['cms_account.act_type','<>','DEMO'],
+			['cms_account.trader_type', '0'],
 			['cms_account.is_mt5','1']
 			])->select('cms_account.account_no','cms_account.act_type')->get();
-
+		// dd($trading_accounts);
 		 $payment_method = CMS_Liveaccount::where('email',session('login_email'))->select('partner_payment_method')->first();
 
 		if ($payment_method['partner_payment_method'] != 'all') {
@@ -1404,34 +1410,65 @@ public function saveUpdatedPassword(Request $request)
 		$info=CMS_Liveaccount::where('affiliate_prom_code',$id)->first();
 		$affiliate_prom_code = $info->affiliate_prom_code;
 		
+		$ib_commission = DB::table('partner_trade_earning')->where([
+            ['ib_code', '=', $affiliate_prom_code],
+        ])->sum('total_commission');
 
-		$mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->where('cms_ib_level.parent_ib',$affiliate_prom_code)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('mt5_deals.VolumeClosed','<>',0)->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.TimeDone','mt5_orders_history.VolumeInitial','cms_ib_level.level','cms_account.act_type')->get();
+		// $mt5_orders_history = CMS_Iblevel::join('cms_liveaccount','cms_liveaccount.affiliate_prom_code','cms_ib_level.child_ib')->join('cms_account','cms_account.email','cms_liveaccount.email')->join('mt5_orders_history','cms_account.account_no','mt5_orders_history.Login')->join('mt5_deals','mt5_orders_history.Order','mt5_deals.Order')->where('cms_ib_level.parent_ib',$affiliate_prom_code)->where('mt5_orders_history.Type','<',2)->where('mt5_orders_history.State',4)->where('mt5_deals.VolumeClosed','<>',0)->select('mt5_deals.PositionID','mt5_orders_history.Symbol','mt5_orders_history.TimeDone','mt5_orders_history.VolumeInitial','cms_ib_level.level','cms_account.act_type')->get();
 
-		$total_earnings = 0;
+		// $total_earnings = 0;
 
-		foreach ($mt5_orders_history as $key=>$moh) {
-				$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
-			if($open_time_trade){
-			$open_time=$open_time_trade->Time;
-			$start = strtotime($open_time);
-			$end = strtotime($moh->TimeDone);
+		// foreach ($mt5_orders_history as $key=>$moh) {
+		// 		$open_time_trade = DB::table('mt5_deals')->where('mt5_deals.order',$moh->PositionID)->where('mt5_deals.VolumeClosed',0)->first();
+		// 	if($open_time_trade){
+		// 	$open_time=$open_time_trade->Time;
+		// 	$start = strtotime($open_time);
+		// 	$end = strtotime($moh->TimeDone);
 
-			if(($end-$start)<0){
-				unset($mt5_orders_history[$key]);
-				continue;
-			}
+		// 	if(($end-$start)<0){
+		// 		unset($mt5_orders_history[$key]);
+		// 		continue;
+		// 	}
 
-			}
-			$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$affiliate_prom_code)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
-			if($ib_commission){
-				$total_earnings+=$ib_commission->commission*$moh->VolumeInitial/10000;
-			}
+		// 	}
+		// 	$ib_commission = CMS_IbCommission::join('partner_currency_groups','partner_currency_groups.id','cms_ib_commission.partner_currency_group_id')->join('partner_currency_symbols','partner_currency_symbols.partner_currency_group_id','partner_currency_groups.id')->where('cms_ib_commission.master_ib',$affiliate_prom_code)->where('cms_ib_commission.level',$moh->level)->where('cms_ib_commission.group_name',$moh->act_type)->where('partner_currency_symbols.symbol',$moh->Symbol)->select('cms_ib_commission.commission')->first();
+		// 	if($ib_commission){
+		// 		$total_earnings+=$ib_commission->commission*$moh->VolumeInitial/10000;
+		// 	}
 
+		// }
+
+		// if($total_earnings>0){
+		// 	$total_earnings = round($total_earnings,2);
+		// }
+
+		// $total_withdraw = Partner_Withdraw::where([
+		// 		['email','=',$info->email],
+		// 		['status','<>','2']
+		// 		])->sum('amount');
+		// if($total_withdraw<0){
+		// 	$total_withdraw = -round($total_withdraw,2);
+		// }
+		
+
+		// $available_balance = $total_earnings-$total_withdraw;
+		// if($available_balance>0){
+		// 	$available_balance = round($available_balance,2);
+		// }
+		// else{
+		// 	$available_balance = 0;
+		// }
+
+
+		if($ib_commission>0){
+			$ib_commission = round($ib_commission,2);
 		}
 
-		if($total_earnings>0){
-			$total_earnings = round($total_earnings,2);
-		}
+		$mam_commission =  DB::table('st_commission_history')
+                ->where('manager_email', '=', $info->email)
+                ->sum('amount');
+
+        $net_commission = $ib_commission + $mam_commission;
 
 		$total_withdraw = Partner_Withdraw::where([
 				['email','=',$info->email],
@@ -1442,7 +1479,7 @@ public function saveUpdatedPassword(Request $request)
 		}
 		
 
-		$available_balance = $total_earnings-$total_withdraw;
+		$available_balance = $net_commission-$total_withdraw;
 		if($available_balance>0){
 			$available_balance = round($available_balance,2);
 		}
@@ -1451,6 +1488,8 @@ public function saveUpdatedPassword(Request $request)
 		}
 
 		return $available_balance;
+
+
 	}
 	
 	

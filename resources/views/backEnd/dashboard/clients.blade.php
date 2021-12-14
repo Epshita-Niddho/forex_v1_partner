@@ -117,16 +117,16 @@
                                 <li class="nav-item">
                                     <a href="#tab_2" id="tabb2" class="nav-link" data-toggle="tab">Level 2</a>
                                 </li>
-                                <!-- <li class="nav-item">
+                                <li class="nav-item">
                                     <a href="#tab_3" id="tabb3" class="nav-link" data-toggle="tab">Level 3</a>
-                                </li> -->
-                                <!-- <li class="nav-item">
+                                </li>
+                               <!-- <li class="nav-item">
                                     <a href="#tab_4" id="tabb4" class="nav-link" data-toggle="tab">Level 4</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="#tab_5" id="tabb5" class="nav-link" data-toggle="tab">Level 5</a>
-                                </li>
-                                <li class="nav-item">
+                                </li> -->
+                                 <!-- <li class="nav-item">
                                     <a href="#tab_6" id="tabb6" class="nav-link" data-toggle="tab">Level 6</a>
                                 </li>
                                 <li class="nav-item">
