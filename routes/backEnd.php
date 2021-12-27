@@ -108,11 +108,11 @@ Route::get('/ib-level-datatable-custom/{level}/{from}/{to}','DashboardController
 Route::get('/withdraw',  'DashboardController@getFundWithdraw');
 Route::post('/withdraw',  'DashboardController@postFundWithdraw');
 
-Route::get('/neteller_withdraw',  'DashboardController@getNetellerWithdraw');
-Route::post('/neteller_withdraw',  'DashboardController@postNetellerWithdraw');
+// Route::get('/neteller_withdraw',  'DashboardController@getNetellerWithdraw');
+// Route::post('/neteller_withdraw',  'DashboardController@postNetellerWithdraw');
 
-Route::get('/skrill_withdraw',  'DashboardController@getSkrillWithdraw');
-Route::post('/skrill_withdraw',  'DashboardController@postSkrillWithdraw');
+// Route::get('/skrill_withdraw',  'DashboardController@getSkrillWithdraw');
+// Route::post('/skrill_withdraw',  'DashboardController@postSkrillWithdraw');
 
 Route::get('/bank_transfer',  'DashboardController@getBankTransfer');
 Route::post('/bank_transfer',  'DashboardController@postBankTransfer');

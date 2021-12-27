@@ -71,7 +71,7 @@
                             <div class="row m-t-35" style="margin-bottom: 30px;">
                             @if($methods != 'all')
                             @foreach($methods as $method)
-                            @if($method == 'neteller')
+                            <!-- @if($method == 'neteller')
                             <div class="col-md-3">
                             <div class="payhod card"><a href="/neteller_withdraw"><img width="200px" height="80px" src="/img/payment/neteller.png" alt=""></a></div>
                             </div>
@@ -80,7 +80,7 @@
                             <div class="col-md-3">
                             <div class=" payhod card"><a href="/skrill_withdraw"><img width="200px" height="80px" src="/img/payment/skrill.png" alt=""></a></div>
                             </div>
-                            @endif
+                            @endif -->
                             @if($method == 'bank')
                             <div class="col-md-3">
                             <div class=" payhod card"><a href="/bank_transfer"><img width="200px" height="80px" src="/img/payment/bank.svg" alt=""></a></div>
@@ -88,12 +88,12 @@
                             @endif
                             @endforeach
                             @else
-                            <div class="col-md-3">
+                            <!-- <div class="col-md-3">
                             <div class="payhod card"><a href="/neteller_withdraw"><img width="200px" height="80px" src="/img/payment/neteller.png" alt=""></a></div>
                             </div>
                             <div class="col-md-3">
                             <div class=" payhod card"><a href="/skrill_withdraw"><img width="200px" height="80px" src="/img/payment/skrill.png" alt=""></a></div>
-                            </div>
+                            </div> -->
                             <div class="col-md-3">
                             <div class=" payhod card"><a href="/bank_transfer"><img width="200px" height="80px" src="/img/payment/bank.svg" alt=""></a></div>
                             </div>
